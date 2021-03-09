@@ -15,10 +15,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
 
 import com.example.mychatapp.Fragments.ChatsFragment;
 import com.example.mychatapp.MessageActivity;
+import com.example.mychatapp.Model.Chats;
+import com.example.mychatapp.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +35,9 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static android.content.ContentValues.TAG;
@@ -39,6 +45,8 @@ import static android.content.ContentValues.TAG;
 
 public class FirebaseMessaging extends FirebaseMessagingService {
 
+
+    public static List<Chats> chatsArrayList = new ArrayList<>();
 
     @Override
     public void onNewToken(@NonNull String s) {
@@ -72,6 +80,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void sendOreoNotification(RemoteMessage remoteMessage){
         String user = remoteMessage.getData().get("user");
         String icon = remoteMessage.getData().get("icon");
@@ -81,16 +90,11 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, MessageActivity.class);
-        //Bundle bundle = new Bundle();
-        //bundle.putString("userid", user);
-
-        Log.d(TAG, "sendNotification: title is " + title);
-        Log.d(TAG, "sendNotification: user is " + user);
-        Log.d(TAG, "sendNotification: body is " + body);
-       // Log.d(TAG, "sendNotification: title is " + title);
+        Bundle bundle = new Bundle();
+        bundle.putString("friendid", user);
 
 
-       // intent.putExtras(bundle);
+         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
         Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -98,6 +102,52 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         OreaAndAboveNotification oreoNotification = new OreaAndAboveNotification(this);
         Notification.Builder builder = oreoNotification.getNotification(title, body, pendingIntent,
                 defaultSound, icon);
+
+       /* //todo
+
+        // todo style
+
+        RemoteInput remoteInput = new RemoteInput.Builder("key_text_reply").setLabel("Your Message...").build();
+        Intent replyIntent;
+        PendingIntent pIntentreply = null;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+            replyIntent = new Intent(this, NotificationService.class);
+            pIntentreply = PendingIntent.getBroadcast(this, 0, replyIntent, 0);
+
+
+        }
+
+        NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(R.drawable.reply,
+                "Reply", pIntentreply).addRemoteInput(remoteInput).build();
+
+
+        // todo action
+
+        NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle("Me");
+        messagingStyle.setConversationTitle("Chats");
+
+        for (Chats shitshit : chatsArrayList) {
+
+            long time = System.currentTimeMillis();
+
+            NotificationCompat.MessagingStyle.Message Nm = new NotificationCompat.MessagingStyle.Message(shitshit.getMessage(), time, shitshit.getSender());
+
+            messagingStyle.addMessage(Nm);
+
+        }
+
+
+
+
+
+        NotificationCompat.Builder todoshit = oreoNotification.getNotificationShit (messagingStyle, replyAction, title, body, pendingIntent, defaultSound, icon);
+*/
+
+
+
+
 
         int i = 0;
         if (j > 0){
@@ -119,7 +169,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, MessageActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString("userid", user);
+        bundle.putString("friendid", user);
 
 
         intent.putExtras(bundle);

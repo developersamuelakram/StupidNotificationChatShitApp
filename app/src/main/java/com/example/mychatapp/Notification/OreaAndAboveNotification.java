@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
 public class OreaAndAboveNotification extends ContextWrapper {
 
@@ -63,12 +64,34 @@ public class OreaAndAboveNotification extends ContextWrapper {
     public Notification.Builder getNotification(String title, String body, PendingIntent pIntent, Uri soundUri, String icon) {
 
 
+
         return  new Notification.Builder(getApplicationContext(), ID)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setSound(soundUri)
+                .setContentIntent(pIntent)
+                .setAutoCancel(true)
+                .setSmallIcon(Integer.parseInt(icon));
+
+
+
+
+    }
+
+
+    // not using
+    @TargetApi(Build.VERSION_CODES.O)
+    public NotificationCompat.Builder getNotificationShit(NotificationCompat.MessagingStyle style, NotificationCompat.Action action, String title, String body, PendingIntent pIntent, Uri soundUri, String icon) {
+
+
+
+        return  new NotificationCompat.Builder(this, ID)
+                .addAction(action)
+                .setStyle(style)
                 .setContentIntent(pIntent)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSound(soundUri)
-                .setAutoCancel(true)
                 .setSmallIcon(Integer.parseInt(icon));
 
 
