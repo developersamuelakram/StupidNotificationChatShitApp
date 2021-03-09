@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.example.mychatapp.Model.Users;
 import com.example.mychatapp.Notification.Token;
 import com.example.mychatapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,11 +27,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.InstallationTokenResult;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 public class ChatsFragment extends Fragment {
 
@@ -39,7 +45,7 @@ public class ChatsFragment extends Fragment {
     RecyclerView recyclerView;
     UserAdapter mAdapter;
     FirebaseUser firebaseUser;
-
+    String tokenshit;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,17 +96,19 @@ public class ChatsFragment extends Fragment {
         String token =   FirebaseInstanceId.getInstance().getToken();
         stToken(token);
 */
-        FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
             @Override
-            public void onComplete(@NonNull Task<InstallationTokenResult> task) {
-                if (task.isSuccessful()) {
+            public void onSuccess(InstanceIdResult instanceIdResult) {
 
-                    String token = task.getResult().getToken();
-                    stToken(token);
-                }
+                 tokenshit = instanceIdResult.getToken();
 
+                 stToken(tokenshit);
             }
         });
+
+
 
 
 

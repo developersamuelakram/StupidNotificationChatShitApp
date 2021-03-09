@@ -57,6 +57,9 @@ public class MessageActivity extends AppCompatActivity {
 
     EditText et_message;
     Button send;
+    String shitshitshit;
+
+    String toototo;
 
     DatabaseReference reference;
 
@@ -322,13 +325,25 @@ public class MessageActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Users user  = snapshot.getValue(Users.class);
 
-                        if (notify) {
+                        if (!user.getUsername().equals(usernameonToolbar.getText().toString())) {
 
-
-                            sendNotification(friendid, user.getUsername(), msgs);
-
+                             shitshitshit = user.getUsername();
 
                         }
+
+
+                            if (notify) {
+
+
+
+
+                                sendNotification(friendid, shitshitshit, msgs);
+
+                            }
+
+
+
+
 
                         notify  = false;
 
@@ -354,24 +369,23 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
 
+              // for (DataSnapshot ds: snapshot.getChildren()) {
 
-               // for (DataSnapshot ds: snapshot.getChildren()) {
 
+                   Token token = snapshot.getValue(Token.class);
+                   assert token != null;
+                   toototo = token.getToken();
+                   Log.d("TAG", "onDataChange: " + token);
 
-                Token shits = snapshot.getValue(Token.class);
-                String toototo = shits.getToken();
-
-                    Log.d("TAG", "onDataChange: "+shits);
+              // }
 
 
 
 
                     Data data = new Data(firebaseUser.getUid(),
                             R.mipmap.ic_launcher,
-                            msgs+
-                                    ""
-                                    + name,
-                            "New Message",
+                            msgs,
+                            "New Message From " + name,
                             friendid);
 
 
@@ -394,6 +408,7 @@ public class MessageActivity extends AppCompatActivity {
                             }
                         }
 
+
                         @Override
                         public void onFailure(Call<Response> call, Throwable t) {
 
@@ -403,7 +418,7 @@ public class MessageActivity extends AppCompatActivity {
                 }
 
 
-            //}
+
 
 
             @Override

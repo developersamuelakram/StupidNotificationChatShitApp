@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.example.mychatapp.Fragments.ChatsFragment;
 import com.example.mychatapp.MessageActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -44,15 +45,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         super.onNewToken(s);
 
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (firebaseUser!=null) {
-
-
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
-            Token token = new Token(s);
-            reference.child(firebaseUser.getUid()).setValue(token);
-        }
 
     }
 
@@ -66,13 +59,16 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (firebaseUser != null && sented.equals(firebaseUser.getUid())){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    sendOreoNotification(remoteMessage);
-                } else {
-                    sendNotification(remoteMessage);
-                }
+        if (firebaseUser != null) {
+            assert sented != null;
+            if (sented.equals(firebaseUser.getUid())) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        sendOreoNotification(remoteMessage);
+                    } else {
+                        sendNotification(remoteMessage);
+                    }
 
+            }
         }
     }
 
@@ -85,9 +81,16 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, MessageActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("userid", user);
-        intent.putExtras(bundle);
+        //Bundle bundle = new Bundle();
+        //bundle.putString("userid", user);
+
+        Log.d(TAG, "sendNotification: title is " + title);
+        Log.d(TAG, "sendNotification: user is " + user);
+        Log.d(TAG, "sendNotification: body is " + body);
+       // Log.d(TAG, "sendNotification: title is " + title);
+
+
+       // intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
         Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -117,6 +120,8 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         Intent intent = new Intent(this, MessageActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("userid", user);
+
+
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
